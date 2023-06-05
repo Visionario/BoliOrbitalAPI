@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "boli_orbital_api"
+version = "0.9b13"
+description = "Orbital API RPC for Bolivarcoin/Bolicoin blockchain"
+authors = ["Asdrubal Velasquez Lagrave <hello@orbital.center>"]
+maintainers = ["Asdrubal Velasquez Lagrave <hello@orbital.center>"]
+repository = "https://github.com/Visionario/BoliOrbitalAPI"
+homepage = "https://orbital.center"
+keywords = ["bolicoin", "bolivarcoin", "criptocurrency", "blockchain", "api"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Topic :: Software Development",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+readme = "README.md"
+license = "MIT"
+include = [
+    "LICENSE",
+    "README_ES.md",
+    "CHANGELOG.md",
+    "TODO.md",
+    "requirements.txt",
+    "requirements_freezed.txt",
+    ".gitignore",
+    "tests",
+    "docs"
+]
+exclude = ["boli_orbital_api/logs/"]
+packages = [{ include = "boli_orbital_api" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.31.0"
+orjson = "^3.8.14"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
