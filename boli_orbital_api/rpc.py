@@ -8,7 +8,7 @@
     __copyright__: "2018-2023"
     __credits__: [""]
     __license__: "MIT"
-    __version__: 0.9b13
+    __version__: 0.9b14
     __maintainer__: "Asdrúbal Velásquez Lagrave"
     __email__: "hello@orbital.center"
     __status__: "BETA"
@@ -24,16 +24,16 @@ from requests import Response, exceptions as request_exceptions, post
 from .logger import setup_logger
 
 __all__ = [
-        "Node",
-        "GobjectListSignals",
-        "GobjectListTypes",
-        "MasternodeCountOptions",
-        "MasternodeStartModes",
-        "About",
-        "VERSION",
-        ]
+    "Node",
+    "GobjectListSignals",
+    "GobjectListTypes",
+    "MasternodeCountOptions",
+    "MasternodeStartModes",
+    "About",
+    "VERSION",
+]
 
-VERSION = "0.9b13"
+VERSION = "0.9b14"
 
 # LOGGER
 logger = setup_logger(__name__)
@@ -213,7 +213,7 @@ class _Wallet:
             comment: str = '',
             comment_to: str = '',
             subtractfeefromamount: bool = False
-            ) -> dict:
+    ) -> dict:
         """
             sendtoaddress "bolivarcoinaddress" amount ( "comment" "comment-to" subtractfeefromamount use_is use_ps )
 
@@ -245,15 +245,15 @@ class _Wallet:
         if amount <= 0:
             return {"result": None, "error": "amount <= 0"}
         return _process_result(
-                self.raw_call(
-                        "sendtoaddress", params=[
-                                address,
-                                amount,
-                                comment,
-                                comment_to,
-                                subtractfeefromamount]
-                        )
-                )
+            self.raw_call(
+                "sendtoaddress", params=[
+                    address,
+                    amount,
+                    comment,
+                    comment_to,
+                    subtractfeefromamount]
+            )
+        )
 
 
 # ╻ ╻╺┳╸╻╻
@@ -457,7 +457,7 @@ class _Transactions:
             count: int = 10,
             from_number: int = 0,
             includewatchonly: bool = False
-            ) -> dict:
+    ) -> dict:
         """
         Bolicoin uses "*" as default account
 
@@ -526,15 +526,15 @@ class _Transactions:
 
         """
         return _process_result(
-                self.raw_call(
-                        "listtransactions", params=[
-                                account,
-                                count,
-                                from_number,
-                                includewatchonly
-                                ]
-                        )
-                )
+            self.raw_call(
+                "listtransactions", params=[
+                    account,
+                    count,
+                    from_number,
+                    includewatchonly
+                ]
+            )
+        )
 
 
 # ┏┳┓╻┏┓╻╻┏┓╻┏━╸
@@ -1000,7 +1000,7 @@ class _Governance:
             self,
             signal: GobjectListSignals = GobjectListSignals.ALL,
             type: GobjectListTypes = GobjectListTypes.ALL
-            ) -> dict:
+    ) -> dict:
         """
         List governance objects (can be filtered by signal and/or object type)
 
@@ -1095,15 +1095,15 @@ class _BlockChain:
 # ┃┗┫┃ ┃ ┃┃┣╸
 # ╹ ╹┗━┛╺┻┛┗━╸
 class Node(
-        _Utils,
-        _Wallet,
-        _BlockChain,
-        _Network,
-        _Transactions,
-        _Governance,
-        _Masternode,
-        _Help
-        ):
+    _Utils,
+    _Wallet,
+    _BlockChain,
+    _Network,
+    _Transactions,
+    _Governance,
+    _Masternode,
+    _Help
+):
     """ Main RPC/API Class
 
         Communicate with nodes via RPC
@@ -1123,7 +1123,7 @@ class Node(
             ticker: str = 'BOLI',
             is_masternode: bool = False,
             app_id: str = 'standard',
-            ):
+    ):
 
         self.server_ip = server_ip
         self.rpc_port = rpc_port
@@ -1170,7 +1170,7 @@ class Node(
             self,
             method: str,
             params=None,
-            ) -> Any:
+    ) -> Any:
         """ Rpc communication raw_call main method
 
         It will return:
@@ -1195,11 +1195,11 @@ class Node(
         try:
             # print(self._data, dumps(self._data), sep="\n")
             response = post(
-                    url=f'{self.scheme}://{self.server_ip}:{self.rpc_port}/',
-                    headers=self._headers,
-                    data=dumps(self._data),
-                    auth=(self.rpc_user, self.rpc_password)
-                    )
+                url=f'{self.scheme}://{self.server_ip}:{self.rpc_port}/',
+                headers=self._headers,
+                data=dumps(self._data),
+                auth=(self.rpc_user, self.rpc_password)
+            )
 
             # print("raw_call_result", response.status_code, response.json())
 
@@ -1227,19 +1227,19 @@ class Node(
     def fundrawtransaction(
             self,
             recipients_with_amounts: dict,  # {"address..1":amount..1,"address..2":amount..2,...}
-            ):
+    ):
         """Sending Coins with Automated Raw Transactions"""
 
         # Step one: Get unfinished TX with createrawtransaction
         try:
             # {'result': '01000000000100d2496b000000001976a9144486f188fd5361906cf9a0c1cd1105f913a080f488ac00000000', 'errors': None}
             rawtransaction = self.raw_call(
-                    method='createrawtransaction',
-                    params=[
-                            [],
-                            recipients_with_amounts,
-                            ]
-                    )
+                method='createrawtransaction',
+                params=[
+                    [],
+                    recipients_with_amounts,
+                ]
+            )
 
             if rawtransaction['errors'] is not None:
                 return {"result": rawtransaction.get('result', None), "errors": rawtransaction.get('errors', True)}
@@ -1253,9 +1253,9 @@ class Node(
         # Step two: Fund that bare-bones transaction
         try:
             fund = self.raw_call(
-                    method='fundrawtransaction',
-                    params=[rawtransaction['result']]
-                    )
+                method='fundrawtransaction',
+                params=[rawtransaction['result']]
+            )
 
             # print(f"fund {fund}")
 
@@ -1282,9 +1282,9 @@ class Node(
         # Decode decoderawtransaction
         try:
             decoded = self.raw_call(
-                    method='decoderawtransaction',
-                    params=[hex]
-                    )
+                method='decoderawtransaction',
+                params=[hex]
+            )
             # print(f"decoded {decoded}")
 
             if decoded['errors'] is not None:
@@ -1297,9 +1297,9 @@ class Node(
         # Step 3: Signs the transaction signrawtransaction
         try:
             signed = self.raw_call(
-                    method='signrawtransaction',
-                    params=[hex]
-                    )
+                method='signrawtransaction',
+                params=[hex]
+            )
 
             # print(f"signed {signed}")
 
@@ -1316,9 +1316,9 @@ class Node(
         # Step 4: Send RAW Transaction sendrawtransaction
         try:
             sent = self.raw_call(
-                    method='sendrawtransaction',
-                    params=[signedhex]
-                    )
+                method='sendrawtransaction',
+                params=[signedhex]
+            )
 
             # print(f"sent {sent}")
 
@@ -1334,10 +1334,10 @@ class Node(
         # SUCCESS TXID Acquired
         # SUCCESS TXID Acquired
         return {
-                "txid": sent['result'],
-                "fee": fee,
-                "errors": sent['errors']
-                }
+            "txid": sent['result'],
+            "fee": fee,
+            "errors": sent['errors']
+        }
 
     @property
     def is_online(self) -> bool:
@@ -1366,10 +1366,10 @@ class Node(
               --header 'Content-Type: text/plain;' localhost:62026
         """
         return {
-                "getblockchaininfo": self.getblockchaininfo(),
-                "getnetworkinfo": self.getnetworkinfo(),
-                "getwalletinfo": self.getwalletinfo()
-                }
+            "getblockchaininfo": self.getblockchaininfo(),
+            "getnetworkinfo": self.getnetworkinfo(),
+            "getwalletinfo": self.getwalletinfo()
+        }
 
     @property
     def api_version(self) -> str:
@@ -1381,14 +1381,14 @@ class About:
     @classmethod
     def about(cls):
         return {
-                '__author__': "Asdrúbal Velásquez Lagrave - Twitter/Telegram: @Visionario",
-                '__copyright__': "2018-2023",
-                '__credits__': [""],
-                '__license__': "MIT",
-                '__version__': VERSION,
-                '__maintainer__': "Asdrúbal Velásquez Lagrave",
-                '__email__': "hello@orbital.center",
-                '__status__': "BETA",
-                '__app_name__': "API RPC main class for Bolivarcoin/Bolicoin nodes (Layer 1)",
-                '__url__': "https://orbital.center",
-                }
+            '__author__': "Asdrúbal Velásquez Lagrave - Twitter/Telegram: @Visionario",
+            '__copyright__': "2018-2023",
+            '__credits__': [""],
+            '__license__': "MIT",
+            '__version__': VERSION,
+            '__maintainer__': "Asdrúbal Velásquez Lagrave",
+            '__email__': "hello@orbital.center",
+            '__status__': "BETA",
+            '__app_name__': "API RPC main class for Bolivarcoin/Bolicoin nodes (Layer 1)",
+            '__url__': "https://orbital.center",
+        }
