@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "boli_orbital_api"
-version = "0.9b14"
+version = "0.9b15"
 description = "Orbital API RPC for Bolivarcoin/Bolicoin blockchain"
 authors = ["Asdrubal Velasquez Lagrave <hello@orbital.center>"]
 maintainers = ["Asdrubal Velasquez Lagrave <hello@orbital.center>"]

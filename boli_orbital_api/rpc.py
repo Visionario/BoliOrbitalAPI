@@ -8,7 +8,7 @@
     __copyright__: "2018-2023"
     __credits__: [""]
     __license__: "MIT"
-    __version__: 0.9b14
+    __version__: 0.9b15
     __maintainer__: "Asdrúbal Velásquez Lagrave"
     __email__: "hello@orbital.center"
     __status__: "BETA"
@@ -33,7 +33,7 @@ __all__ = [
     "VERSION",
 ]
 
-VERSION = "0.9b14"
+VERSION = "0.9b15"
 
 # LOGGER
 logger = setup_logger(__name__)
@@ -750,7 +750,7 @@ class _Masternode:
         Print masternode.conf in JSON format
         masternode list-conf
         """
-        return _process_result(self.raw_call("masternode", params=['list-conf']))
+        return _process_result(self.raw_call("masternode", params=['list-conf'], return_binary=True))
 
     def masternode_start_alias(self, alias) -> dict:
         """
@@ -1170,18 +1170,24 @@ class Node(
             self,
             method: str,
             params=None,
+            return_binary=False
     ) -> Any:
         """ Rpc communication raw_call main method
 
         It will return:
-        # OK
+        # OK JSON
         {"result": response.json()['result'], 'errors': None} When OK
+
+        # OK BINARY
+        {"result": response.content, 'errors': None} When OK
 
         # Server responds but NOT OK
         {"result": response.json()['result'], 'errors': None} When server responds but error in command or sintaxis
 
         # NO connect or communication fail
         {"result": response, 'errors': f'{e}'}
+
+        return_binary: Some methods prefer use binary version instead JSON
 
         """
 
@@ -1201,11 +1207,12 @@ class Node(
                 auth=(self.rpc_user, self.rpc_password)
             )
 
-            # print("raw_call_result", response.status_code, response.json())
-
             if response.status_code == 200:
                 self._valid_node = True
-                return {"result": response.json()['result'], 'errors': None}
+                if return_binary:
+                    return {"result": response.content, 'errors': None}
+                else:
+                    return {"result": response.json()['result'], 'errors': None}
 
             else:
                 self._valid_node = False
