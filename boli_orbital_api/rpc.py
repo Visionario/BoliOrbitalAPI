@@ -8,7 +8,7 @@
     __copyright__: "2018-2023"
     __credits__: [""]
     __license__: "MIT"
-    __version__: 0.9b15
+    __version__: 0.9b17
     __maintainer__: "Asdrúbal Velásquez Lagrave"
     __email__: "hello@orbital.center"
     __status__: "BETA"
@@ -29,11 +29,12 @@ __all__ = [
     "GobjectListTypes",
     "MasternodeCountOptions",
     "MasternodeStartModes",
+    "MnListModes",
     "About",
     "VERSION",
 ]
 
-VERSION = "0.9b15"
+VERSION = "0.9b17"
 
 # LOGGER
 logger = setup_logger(__name__)
@@ -70,6 +71,22 @@ class MasternodeStartModes:
     ALL = 'all'
     MISSING = 'missing'
     DISABLED = 'disabled'
+
+
+class MnListModes:
+    """See masternodelist()"""
+    ACTIVESECONDS = 'activeseconds'
+    ADDR = 'addr'
+    FULL = 'full'
+    INFO = 'info'
+    LASTPAIDBLOCK = 'lastpaidblock'
+    LASTPAIDTIME = 'lastpaidtime'
+    LASTSEEN = 'lastseen'
+    PAYEE = 'payee'
+    PROTOCOL = 'protocol'
+    PUBKEY = 'pubkey'
+    RANK = 'rank'
+    STATUS = 'status'
 
 
 def _process_result(result):
@@ -779,6 +796,55 @@ class _Masternode:
             return {'result': f'Available modes are: {MASTERNODE_START_MODES}', 'errors': True}
 
         return _process_result(self.raw_call("masternode", params=params))
+
+    def masternodelist(self, mode: MnListModes = MnListModes.STATUS, mn_filter: str = ''):
+        """
+            masternodelist ( "mode" "filter" )
+            Get a list of masternodes in different modes
+
+            Arguments:
+            1. "mode"      (string, optional/required to use filter, defaults = status) The mode to run list in
+            2. "filter"    (string, optional) Filter results. Partial match by outpoint by default in all modes,
+                                                additional matches in some modes are also available
+
+            Available modes:
+              activeseconds  - Print number of seconds masternode recognized by the network as enabled
+                               (since latest issued "masternode start/start-many/start-alias")
+              addr           - Print ip address associated with a masternode (can be additionally filtered, partial match)
+              full           - Print info in format 'status protocol payee lastseen activeseconds lastpaidtime lastpaidblock IP'
+                               (can be additionally filtered, partial match)
+              info           - Print info in format 'status protocol payee lastseen activeseconds sentinelversion sentinelstate IP'
+                               (can be additionally filtered, partial match)
+              lastpaidblock  - Print the last block height a node was paid on the network
+              lastpaidtime   - Print the last time a node was paid on the network
+              lastseen       - Print timestamp of when a masternode was last seen on the network
+              payee          - Print Bolivarcoin address associated with a masternode (can be additionally filtered,
+                               partial match)
+              protocol       - Print protocol of a masternode (can be additionally filtered, exact match)
+              pubkey         - Print the masternode (not collateral) public key
+              rank           - Print rank of a masternode based on current block
+              status         - Print masternode status: PRE_ENABLED / ENABLED / EXPIRED / WATCHDOG_EXPIRED / NEW_START_REQUIRED /
+                               UPDATE_REQUIRED / POSE_BAN / OUTPOINT_SPENT (can be additionally filtered, partial match)
+
+                EXAMPLE
+                {
+                "ad06255e05cc22b5abb74187e2008fd022bd192b1bac065bc87ae3070a9761fb-0": "NEW_START_REQUIRED 70212 bJG26MWSpxiYLada8orPxz8mwpUYubvJFh 1676268599  1065786 1.1.0 current 167.86.105.73:49053",
+                }
+
+        """
+        return _process_result(self.raw_call("masternodelist", params=[mode, mn_filter]))
+
+    def mnsync_status(self):
+        """Returns the sync status (mnsync status)"""
+        return _process_result(self.raw_call("mnsync", params=['status']))
+
+    def mnsync_next(self):
+        """Returns the sync status to the next step (mnsync next)"""
+        return _process_result(self.raw_call("mnsync", params=['next']))
+
+    def mnsync_reset(self):
+        """Reset mnsync (mnsync reset)"""
+        return _process_result(self.raw_call("mnsync", params=['reset']))
 
 
 # ╻ ╻┏━╸╻  ┏━┓
